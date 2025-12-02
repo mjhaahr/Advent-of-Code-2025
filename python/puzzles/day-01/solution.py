@@ -7,14 +7,27 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath
 import utils
 
 def puzzle(filename, part2):
-    # Zero the Accumulator
+    # Start Accumulator at 0
     score = 0
+    
+    # Dial starts at 50
+    dial = 50
     
     # Open File
     with open(filename, 'r') as fp:
         # Loop over all lines
         for line in fp.readlines():
             line = line.strip() 
+            offset = int(line[1:])
+            if (line[0] == 'L'):
+                dial -= offset
+            else:
+                dial +=offset
+            
+            dial = dial % 100
+            # If the Dial ever is exactly 0, the score increases
+            if (dial == 0):
+                score += 1
     
     # Return Accumulator    
     print(score)
