@@ -10,8 +10,7 @@ def puzzle(filename, part2):
     # Start Accumulator at 0
     score = 0
     
-    # Dial starts at 50
-    dial = 50
+    moves = []
     
     # Open File
     with open(filename, 'r') as fp:
@@ -19,15 +18,47 @@ def puzzle(filename, part2):
         for line in fp.readlines():
             line = line.strip() 
             offset = int(line[1:])
-            if (line[0] == 'L'):
+            moves.append((line[0], offset))
+          
+    
+    # Dial starts at 50
+    dial = 50
+      
+    if not part2:
+        for d, offset in moves:
+            if d == 'L':
                 dial -= offset
             else:
-                dial +=offset
-            
+                dial += offset
+        
             dial = dial % 100
             # If the Dial ever is exactly 0, the score increases
             if (dial == 0):
                 score += 1
+    else:
+        # Count number of zero crossings
+        for d, offset in moves:
+            crossings = offset // 100
+            offset = offset % 100
+            if d == 'L':
+                newDial = dial - offset
+            else:
+                newDial = dial + offset
+                
+            corDial = newDial % 100
+            if (corDial == 0):
+                # If the Dial ever is exactly 0, the score increases
+                crossings += 1
+            elif (dial == 0):
+                # Skip a start at 0
+                pass
+            elif (newDial != corDial):
+                # If the mod has been applied, score increases
+                crossings += 1
+                
+            dial = corDial
+                
+            score += crossings
     
     # Return Accumulator    
     print(score)
