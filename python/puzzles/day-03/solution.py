@@ -29,11 +29,14 @@ def calcJoltage(bank, part2):
     idx = 0
     
     # Next Highest Value is max of the string minus the remaining indices (from the start index)
-    for i in range(offset - 1, -1, -1)
-        val = max(bank[idx:-i])
-        idx = bank.index(bank[idx:-i]) + idx
-    
-    print(joltage)
+    for i in range(offset - 1, -1, -1):
+        subBank = bank[idx:-i] if i > 0 else bank[idx:]
+        
+        val = max(subBank)
+        joltage += val
+        
+        idx = subBank.index(val) + idx + 1
+        
     return int(joltage)
     
 if __name__ == "__main__":
