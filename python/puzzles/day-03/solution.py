@@ -22,16 +22,19 @@ def puzzle(filename, part2):
     
     
 def calcJoltage(bank, part2):
-    # Highest Joltage is highest value + highest value to the right of that
+    # Highest Joltage is highest value + highest value to the right of that (+ repeating for the next values)
 
-    # Highest Left Value is max of the string minus the last index
-    lVal = max(bank[:-1])
-    lIdx = bank.index(lVal)
+    joltage = ""
+    offset = 12 if part2 else 2
+    idx = 0
     
-    # Highest Right Value is the max of the string remaining
-    rVal = max(bank[lIdx + 1:])
+    # Next Highest Value is max of the string minus the remaining indices (from the start index)
+    for i in range(offset - 1, -1, -1)
+        val = max(bank[idx:-i])
+        idx = bank.index(bank[idx:-i]) + idx
     
-    return int(lVal + rVal)
+    print(joltage)
+    return int(joltage)
     
 if __name__ == "__main__":
     # Check number of Arguments, expect 2 (after script itself)
