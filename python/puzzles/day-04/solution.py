@@ -18,22 +18,40 @@ def puzzle(filename, part2):
         # Loop over all lines
         for line in fp.readlines():
             line = line.strip() 
-            rows.append(line)
+            rows.append([c for c in line])
             
     grid = utils.Grid(rows)
     
-    # Loop over the whole grid
-    for x, y in list(itertools.product(range(grid.bounds[0] + 1), range(grid.bounds[1] + 1))):
-        # If it's a paper towel
-        if (grid.get(x, y) == '@'):
-            # Check the neighbors
-            count = 0
-            for n in grid.getNeighborsOf8(x, y):
-                count += 1 if n[0] == '@' else 0
-                
-            if count < 4:
-                score += 1
+    lastScore = -1
+    toRemove = []
     
+    # Caching would make this faster, but I don't care to optimize
+    
+    # loop until the score doesn't change
+    while (lastScore != score):
+        lastScore = score
+        
+        # Loop over the whole grid
+        for x, y in list(itertools.product(range(grid.bounds[0] + 1), range(grid.bounds[1] + 1))):
+            # If it's a paper towel
+            if (grid.get(x, y) == '@'):
+                # Check the neighbors
+                count = 0
+                for n in grid.getNeighborsOf8(x, y):
+                    count += 1 if n[0] == '@' else 0
+                
+                if count < 4:
+                    score += 1
+                    toRemove.append([x, y])
+                    
+        # Remove the ones set aside
+        for cell in toRemove:
+            grid.set(cell, '.')
+            
+        # Run once if part 1
+        if not part2:
+            break
+                
     # Return Accumulator    
     print(score)
     
