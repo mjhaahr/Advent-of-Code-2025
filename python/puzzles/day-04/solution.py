@@ -1,6 +1,5 @@
 import sys
 import os
-import itertools
 
 # Modifying Path to include Repo Directory (for util import)
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
@@ -20,29 +19,27 @@ def puzzle(filename, part2):
             line = line.strip() 
             rows.append([c for c in line])
             
-    grid = utils.Grid(rows)
+    grid = utils.DictGrid(rows)
     
     lastScore = -1
-    toRemove = []
-    
-    # Caching would make this faster, but I don't care to optimize
     
     # loop until the score doesn't change
     while (lastScore != score):
         lastScore = score
+        toRemove = []
         
         # Loop over the whole grid
-        for x, y in list(itertools.product(range(grid.bounds[0] + 1), range(grid.bounds[1] + 1))):
+        for cell, val in grid:
             # If it's a paper towel
-            if (grid.get(x, y) == '@'):
+            if (val == '@'):
                 # Check the neighbors
                 count = 0
-                for n in grid.getNeighborsOf8(x, y):
+                for n in grid.getNeighborsOf8(cell):
                     count += 1 if n[0] == '@' else 0
                 
                 if count < 4:
                     score += 1
-                    toRemove.append([x, y])
+                    toRemove.append(cell)
                     
         # Remove the ones set aside
         for cell in toRemove:
