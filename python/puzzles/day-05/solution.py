@@ -42,30 +42,17 @@ def puzzle(filename, part2):
         lastHigh = high 
     
     if not part2:
-        # BS for each ingredient in the ranges
-        for i in ingredients:
-            #score += 1 if IsInRange(i, combinedRanges) else 0
-            #print(f"score: {score}\n")
-            for r in ranges:
-                if i < r[0]:
-                    break
-                elif i > r[1]:
-                    continue
-                else:
-                    score += 1
-                    break
+        # Binary Search for each ingredient in the ranges
+        score = sum(IsInRange(i, combinedRanges) for i in ingredients)
     else:
         # Sum the span of the ranges
-        for r in combinedRanges:
-            span = r[1] - r[0] + 1
-            score += span
+        score = sum(r[1] - r[0] + 1 for r in combinedRanges)
     
     # Return Accumulator    
     print(score)
     
 # Recursive Binary Search
 def IsInRange(val, ranges):
-    print(f"{val}: {ranges}")
     l = len(ranges)
     # End Conditions: One range to check
     if l == 1:
@@ -81,7 +68,7 @@ def IsInRange(val, ranges):
         if val < r[0]:
             # Check below
             return IsInRange(val, ranges[0:idx])
-        elif r[1] < val:
+        elif val > r[1]:
             # Check above
             return IsInRange(val, ranges[idx + 1:])
         else:
