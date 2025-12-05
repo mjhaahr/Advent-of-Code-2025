@@ -33,28 +33,32 @@ def puzzle(filename, part2):
 
     lastHigh = combinedRanges[0][1]
     for low, high in ranges[1:]:
+        high = max(high, lastHigh)
         if low <= lastHigh + 1:
             combinedRanges[-1][1] = high
         else:
             combinedRanges.append([low, high])
-            
-        lastHigh = high
         
-    print(*combinedRanges, sep="\n")
-    print("")
+        lastHigh = high 
     
-    # BS for each ingredient in the ranges
-    for i in ingredients:
-        #score += 1 if IsInRange(i, combinedRanges) else 0
-        #print(f"score: {score}\n")
-        for r in ranges:
-            if i < r[0]:
-                break
-            elif i > r[1]:
-                continue
-            else:
-                score += 1
-                break
+    if not part2:
+        # BS for each ingredient in the ranges
+        for i in ingredients:
+            #score += 1 if IsInRange(i, combinedRanges) else 0
+            #print(f"score: {score}\n")
+            for r in ranges:
+                if i < r[0]:
+                    break
+                elif i > r[1]:
+                    continue
+                else:
+                    score += 1
+                    break
+    else:
+        # Sum the span of the ranges
+        for r in combinedRanges:
+            span = r[1] - r[0] + 1
+            score += span
     
     # Return Accumulator    
     print(score)
