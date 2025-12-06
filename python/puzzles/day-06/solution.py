@@ -15,31 +15,47 @@ def puzzle(filename, part2):
     # Zero the Accumulator
     score = 0
     
-    equations = []
-    
-    first = True
+    rows = []
     
     # Open File
     with open(filename, 'r') as fp:
         # Loop over all lines
         for line in fp.readlines():
-            line = line.strip()
-            
-            for i, val in enumerate(line.split()):
-                if first:
-                    equations.append([int(val)])
-                else:
-                    # Separate digits
-                    val = val if not val.isdigit() else int(val)
-                    equations[i].append(val)
-                    
-            first = False
+            rows.append(line)
+    
+    equations = []
+    
+    # Loop over last row to find the bounds and the operators
+    edges = [0]
+    for i, c in enumerate(rows[-1]):
+        if c == '+' or c == '*':
+            equations.append([c])
+            if (i > 0):
+                edges.append(i) 
+                
+    edges.append(len(rows[0]))
+    
+    # Convert stings to numbers (part1 is simple, just take the value, part2 rotates 90)
+    if not part2:
+        for row in rows[:-1]:
+            for i, val in enumerate(row.split()):
+                equations[i].append(int(val))
+    else:
+        for eq, (low, high) in enumerate(zip(edges[:-1], edges[1:])):
+            vals = [''] * (high - low - 1)
+            for i in range(high - 2, low - 1, -1):
+                for row in rows[:-1]:
+                    idx = i - low
+                    vals[idx] += row[i]
+                
+            for val in vals:
+                equations[eq].append(int(val.strip()))
                     
     for eq in equations:
-        if eq[-1] == '+':
-            score += sum(eq[:-1])
+        if eq[0] == '+':
+            score += sum(eq[1:])
         else:
-            score += math.prod(eq[:-1])
+            score += math.prod(eq[1:])
     
     # Return Accumulator    
     print(score)
