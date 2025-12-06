@@ -15,6 +15,92 @@ def puzzle(filename, part2):
     # Zero the Accumulator
     score = 0
     
+    # Splitting solution into fully separate parts
+    if not part2:
+        score = puzzlePart1(filename)
+    else:
+        score = puzzlePart2(filename)
+    
+    print(score)
+    
+def puzzlePart1(filename):
+    # Simple single loop to parse then loop to solve
+    equations = []
+    first = True
+    # Open File
+    with open(filename, 'r') as fp:
+        # Loop over all lines
+        for line in fp.readlines():
+            vals = line.strip().split()
+            if first:
+                for val in vals:
+                    equations.append([int(val)])
+            else:
+                for eq, val in enumerate(vals):
+                    val = val if not val[0].isdigit() else int(val)
+                    equations[eq].append(val)
+                    
+            first = False
+            
+    score = 0
+    
+    for eq in equations:
+        if eq[-1] == '+':
+            score += sum(eq[:-1])
+        else:
+            score += math.prod(eq[:-1])
+                
+            
+    return score
+    
+def puzzlePart2(filename):
+    rows = []
+    # Open File
+    with open(filename, 'r') as fp:
+        # Loop over all lines
+        rows = fp.readlines()
+    
+    buffer = ''
+    result = 0
+    op = '+'
+    score = 0
+    
+    for i in range(len(rows[0]) - 1):
+        # Character loop
+        for j, row in enumerate(rows):
+            c = row[i]
+            if j < (len(rows) - 1):
+                # Assembling the numbers
+                if c.isdigit():
+                    buffer += c
+            else:
+                # Get the operators
+                if c != ' ':
+                    # First column
+                    result += int(buffer)
+                    op = c
+                elif buffer == '':
+                    # End of the numbers
+                    score += result
+                    result = 0
+                    op = '+' 
+                else:
+                    # Rest of the column
+                    if op == '+':
+                        result += int(buffer)
+                    else:
+                        result *= int(buffer)
+                         
+                buffer = ''
+            
+            
+            
+    return score
+
+def puzzleOld(filename, part2):
+    # Zero the Accumulator
+    score = 0
+    
     rows = []
     
     # Open File
