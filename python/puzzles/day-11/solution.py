@@ -1,16 +1,17 @@
 import sys
 import os
+from collections import defaultdict
+from functools import cache
 
 # Modifying Path to include Repo Directory (for util import)
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
 # Import Utilities
 import utils
 
+rack = defaultdict(list)
 def puzzle(filename, part2):
     # Zero the Accumulator
     score = 0
-    
-    rack = {}
     
     # Open File
     with open(filename, 'r') as fp:
@@ -22,35 +23,39 @@ def puzzle(filename, part2):
             rack[line[0][:-1]] = line[1:]
             
     # List of paths
-    paths = findAllPaths(rack, 'you')
-    #print(*paths, sep='\n')
-    
-    score = len(paths)
+    start = 'you' if not part2 else 'svr'
+    score = findAllPaths(start, part2)
     # Return Accumulator    
     print(score)
 
-# Find all the paths from a given node to the end
-def findAllPaths(rack, current, path=[]):
-    # Add the current node to the end of the path
-    path = path + [current]
-
-    # If the current node is the end, exit
+# Find the number of paths from a given node to the end
+# Default Part 2 quantities to False so Part 1 can run without interruption
+@cache
+def findAllPaths(current, part2=False, fftSeen=False, dacSeen=False):
+    # If the current node is the end, exit, return a 1, this is a valid path
     if current == 'out':
-        return [path]
+        return 1 if not part2 else (fftSeen and dacSeen)
 
-    # If the current node is not in the rack, no paths exist, return an empty list
+    # If the current node is not in the rack, no paths exist, return a 0, not a solution
     if current not in rack:
-        return []
-
-    paths = []
+        return 0
+        
+    pathCount = 0
     # Loop over all adjacent nodes
     for node in rack[current]:
-        # Check if the node is already in the path to avoid cycles
-        if node not in path:
-            # Recursively find paths from the adjacent node to the end
-            paths.extend(findAllPaths(rack, node, path))
+        # Recursively find number of paths from the adjacent node to the end
+        if not part2:
+            pathCount += findAllPaths(node)
+        else:
+            # If the node is one of the special values, set the flag, 
+            if node == 'fft':
+                fftSeen = True
+            elif node == 'dac':
+                dacSeen = True
+                
+            pathCount += findAllPaths(node, part2, fftSeen, dacSeen)
     
-    return paths
+    return pathCount
     
 if __name__ == "__main__":
     # Check number of Arguments, expect 2 (after script itself)
